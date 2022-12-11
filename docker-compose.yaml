@@ -1,29 +1,27 @@
-version: '3'
+version: "3.9"
 
 services:
-    db:
-        image: mysql:latest
-        container_name: adnyamysql
-        environment:
-            MYSQL_ROOT_PASSWORD: adnya
-            MYSQL_DATABASE: adnya
-            MYSQL_USER: adnya
-            MYSQL_PASSWORD: adnya
-        ports:
-            - "6033:3306"
-        volumes:
-            - dbdata:/var/lib/mysql
-    phpmyadmin:
-        image: phpmyadmin:latest
-        container_name: adnyaphpmyadmin
-        links:
-            - db
-        environment:
-            PMA_HOST: db
-            PMA_PORT: 3306
-            PMA_ARBITRARY: 1
-        restart: always
-        ports:
-            - 8085:80
-volumes:
-    dbdata:
+  php:
+    build: .
+    volumes:
+      - ./src:/var/www/html
+    ports:
+      - 9090:80
+
+  db_adnya:
+    container_name: msqlaadnya
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: adnya
+
+  phpmyadminadnya:
+    container_name: phpadminadnya
+    links: db_adnya
+    image: phpmyadmin:latest
+    restart: always
+    ports:
+      - 9091:80
+    environment:
+      - PMA_ARBITRARY=1
